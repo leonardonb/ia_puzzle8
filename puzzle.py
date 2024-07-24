@@ -9,6 +9,8 @@ class PuzzleGame:
         self.root.title("Puzzle Game")
         self.timer_label = tk.Label(self.root, text="Tempo: 0s", font=("Arial", 14))
         self.timer_label.pack()
+        self.move_count_label = tk.Label(self.root, text="Movimentos: 0", font=("Arial", 14))
+        self.move_count_label.pack()
         self.board = self.create_solvable_board()
         self.buttons = []
         self.create_widgets()
@@ -19,6 +21,7 @@ class PuzzleGame:
         self.start_time = None
         self.timer_running = False
         self.congrats_label = None
+        self.move_count = 0
         self.update_buttons()
         self.start_timer()
 
@@ -65,6 +68,8 @@ class PuzzleGame:
         if (abs(blank_i - i) == 1 and blank_j == j) or (abs(blank_j - j) == 1 and blank_i == i):
             self.board[blank_i][blank_j], self.board[i][j] = self.board[i][j], self.board[blank_i][blank_j]
             self.update_buttons()
+            self.move_count += 1
+            self.update_move_count()
             if self.is_solved():
                 self.timer_running = False
                 self.root.after(3000, self.show_congratulations)
@@ -151,6 +156,10 @@ class PuzzleGame:
         if solution:
             self.root.after(500, self.animate_solution, solution)
 
+    def update_move_count(self):
+        # Atualiza a contagem de movimentos
+        self.move_count_label.config(text=f"Movimentos: {self.move_count}")
+
     def restart_game(self):
         # Reinicia o jogo
         if self.congrats_label:
@@ -159,6 +168,8 @@ class PuzzleGame:
         self.board = self.create_solvable_board()
         self.update_buttons()
         self.start_timer()
+        self.move_count = 0
+        self.update_move_count()
         for row in self.buttons:
             for button in row:
                 button.config(state="normal")
